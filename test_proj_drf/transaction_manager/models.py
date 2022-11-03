@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, verbose_name="пользователь", on_delete=models.CASCADE)
     email = models.EmailField(max_length=254, verbose_name="email пользователя")
     balance = models.FloatField(default=0, verbose_name="баланс пользователя")
     transactions = models.ForeignKey('Transaction', on_delete=models.PROTECT, verbose_name="транзакции")
@@ -13,6 +13,7 @@ class Profile(models.Model):
 
 
 class Transaction(models.Model):
+    user = models.ForeignKey(User, verbose_name="пользователь", on_delete=models.CASCADE)
     price = models.FloatField(default=0, verbose_name="цена")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="категория")

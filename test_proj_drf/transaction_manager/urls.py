@@ -1,12 +1,22 @@
-from django.urls import path
+from django.urls import include, path
 
-from .views import CategoryAPIUpdate, CategoryAPIView, TransactionAPIView
+from rest_framework import routers
+
+from .views import CategoryViewSet, ProfileAPI, TransactionAPIView
+
+
+router = routers.SimpleRouter()
+router.register(r'category', CategoryViewSet)
+
 
 urlpatterns = [
+    # авторизация c использованием токана
+    path(r'^auth/', include('djoser.urls')),
+    path(r'^auth/', include('djoser.urls.authtoken')),
     # страница с транзакциями
-    path('transactionList//', TransactionAPIView.as_view(), name='transactionList'),
-    # страница с категориями
-    path('categoryList', CategoryAPIView.as_view(), name='catList'),
-    # страница редактирования категорий
-    path('categoryList/<int:pk>/', CategoryAPIUpdate.as_view(), name='catListUpdate'),
+    path('transition/', TransactionAPIView.as_view(), name='transaction'),
+    # страница профиля
+    path('profile/', ProfileAPI.as_view(), name='profile'),
+    # регистрация роутеря для категорий
+    path('', include(router.urls)),
 ]

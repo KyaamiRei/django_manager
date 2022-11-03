@@ -29,21 +29,25 @@ def set_order(filter_order):
 
 # отправка письсма на почту пользователя
 def send_statistics(user_id):
-    datetime_now = datetime.datetime.now().time
-    send_time = datetime.time(9, 00, 00)  # отправка производится в 9 утра
-    if datetime_now == send_time:
-        queryset = Profile.objects.filter(user=user_id)
-        for item in queryset:
-            total_money = item.user_balance
-            continue
-        mail = send_mail(
-            "Статистика расходов", f"За период пользования приложения вы потратили {total_money} руб.",
-            'kolyavasilenko2703@mail.ru', ['lulnyyk@mail.ru'], fail_silently=True,
-        )
-        if mail:
-            print('Письмо отправлено')
-        else:
-            print('Ошибка отправки1')
+    try:
+        datetime_now = datetime.datetime.now().time
+        send_time = datetime.time(9, 00, 00)  # отправка производится в 9 утра
+        if datetime_now == send_time:
+            queryset = Profile.objects.filter(user=user_id)
+            for item in queryset:
+                total_money = item.user_balance
+                continue
+            # отправка письма
+            mail = send_mail(
+                "Статистика расходов", f"За период пользования приложения вы потратили {total_money} руб.",
+                'kolyavasilenko2703@mail.ru', ['lulnyyk@mail.ru'], fail_silently=True,
+            )
+            if mail:
+                print('Письмо отправлено')
+            else:
+                print('Ошибка отправки1')
+    except:
+        print("Ошибка при отправке письма")
 
 
 # представление для вывода списка транзакций
@@ -52,8 +56,11 @@ class TransactionAPIView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user.id)
-        return queryset.order_by(('', '-')[filter_order] + ('price', 'time_create')[filter_params])
+        try:
+            queryset = Transaction.objects.filter(user=self.request.user.id)
+            return queryset.order_by(('', '-')[filter_order] + ('price', 'time_create')[filter_params])
+        except:
+            print("Ошибка при получении данных транзакций")
 
 
 # представление для работы с категориями
@@ -82,18 +89,21 @@ class ProfileAPI(generics.ListAPIView):
     def get_queryset(self):
         queryset = Profile.objects.filter(user=self.request.user.id)
 
-        if not queryset:
-            Profile.objects.create(user=self.request.user.id, user_email="qqq@mail.ru", user_balance=0)
-            queryset = Profile.objects.filter(user=self.request.user.id)
-        else:
-            queryset_transaction = Transaction.objects.filter(user=self.request.user.id)
-            total_price = 0
-            for item in queryset_transaction:
-                total_price += item.price
-                for item in queryset:
-                    item.user_balance = total_price
-                    item.save()
+        try:
+            if not queryset:
+                Profile.objects.create(user=self.request.user.id, user_email="qqq@mail.ru", user_balance=0)
+                queryset = Profile.objects.filter(user=self.request.user.id)
+            else:
+                queryset_transaction = Transaction.objects.filter(user=self.request.user.id)
+                total_price = 0
+                for item in queryset_transaction:
+                    total_price += item.price
+                    for item in queryset:
+                        item.user_balance = total_price
+                        item.save()
 
-        send_statistics(self.request.user.id)
+            send_statistics(self.request.user.id)
 
-        return queryset
+            return queryset
+        except:
+            print("Ошибка при полчении данных профиля")

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+# модель для профиля
 class Profile(models.Model):
     user = models.IntegerField(blank=False, verbose_name="пользователь")
     user_email = models.CharField(max_length=254, verbose_name="email пользователя")
@@ -11,7 +12,9 @@ class Profile(models.Model):
         return self.user_email
 
 
+# модель для профиля
 class Transaction(models.Model):
+    # пользователь связан с транзакциями для отделения контента от других пользователей
     user = models.ForeignKey(User, verbose_name="пользователь", on_delete=models.CASCADE)
     price = models.FloatField(blank=False, verbose_name="цена")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
@@ -22,6 +25,7 @@ class Transaction(models.Model):
         return self.description
 
 
+# модель для категорий
 class Category(models.Model):
     name = models.CharField(max_length=45, db_index=True, verbose_name="категория")
 

@@ -5,10 +5,12 @@ from rest_framework import routers
 from .views import CategoryViewSet, ProfileAPI, TransactionAPIView
 
 
+# роутер для более удобного использования ViewSets
 router = routers.SimpleRouter()
 router.register(r'category', CategoryViewSet)
 
 
+# пути используемые в приложении
 urlpatterns = [
     # авторизация и регистрация c использованием токана
     path('auth/', include('djoser.urls')),

@@ -1,0 +1,18 @@
+
+1. SELECT brand_id, COUNT(brand_id) AS 'количество ноутбуков' 
+FROM notebooks_notebook
+GROUP BY brand_id
+ORDER BY COUNT(brand_id) DESC;
+(
+SELECT title, COUNT(brand_id)AS 'количество ноутбуков' 
+FROM notebooks_brand
+INNER JOIN notebooks_notebook 
+ON notebooks_brand.brand_id = notebooks_notebook.id
+GROUP BY brand_id
+ORDER BY COUNT(brand_id) DESC;;
+)
+
+2. SELECT ROUND(width,−1), ROUND(height,−1), ROUND(depth,−1), COUNT(width) AS 'количество ноутбуков c одинаковой шириной' 
+FROM notebooks_notebook
+GROUP BY width
+ORDER BY COUNT(width) DESC;

@@ -131,3 +131,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #         'rest_framework.authentication.TokenAuthentication',
 #     ),
 # }
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'kolyavasilenko2703@mail.ru'
+EMAIL_HOST_PASSWORD = '7lSHogzZzUaDFwPmokVo'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+

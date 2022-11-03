@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.mail import send_mail
 
 from rest_framework import generics, viewsets
@@ -26,12 +28,22 @@ def set_order(filter_order):
 
 
 # отправка письсма на почту пользователя
-def send_mail(user_id):
-    mail = send_mail("", "", 'kolyavasilenko2703@mail.ru', ['lulnyyk@mail.ru'], fail_silently=True)
-    if mail:
-        print('Письмо отправлено')
-    else:
-        print('Ошибка отправки1')
+def send_statistics(user_id):
+    datetime_now = datetime.datetime.now().time
+    send_time = datetime.time(9, 00, 00)  # отправка производится в 9 утра
+    if datetime_now == send_time:
+        queryset = Profile.objects.filter(user=user_id)
+        for item in queryset:
+            total_money = item.user_balance
+            continue
+        mail = send_mail(
+            "Статистика расходов", f"За период пользования приложения вы потратили {total_money} руб.",
+            'kolyavasilenko2703@mail.ru', ['lulnyyk@mail.ru'], fail_silently=True,
+        )
+        if mail:
+            print('Письмо отправлено')
+        else:
+            print('Ошибка отправки1')
 
 
 # представление для вывода списка транзакций
@@ -82,6 +94,6 @@ class ProfileAPI(generics.ListAPIView):
                     item.user_balance = total_price
                     item.save()
 
-        send_mail(self.request.user.id)
+        send_statistics(self.request.user.id)
 
         return queryset

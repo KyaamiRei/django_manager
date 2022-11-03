@@ -1,13 +1,16 @@
+from django.core.mail import send_mail
+
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
+
 
 from .models import Category, Profile, Transaction
 from .serializers import CategorySerializer, ProfileSerializer, TransactionSerializer
 
 
 # параметры для сортировки
-filter_params = False  # поле даты создания или цена
-filter_order = True  # сортировка по убываю или возрастания
+filter_params = True  # поле даты создания или цена
+filter_order = False  # сортировка по убываю или возрастания
 
 
 # изменение состояния сортировки
@@ -22,14 +25,23 @@ def set_order(filter_order):
     return filter_order
 
 
+# отправка письсма на почту пользователя
+def send_mail(user_id):
+    mail = send_mail("", "", 'kolyavasilenko2703@mail.ru', ['lulnyyk@mail.ru'], fail_silently=True)
+    if mail:
+        print('Письмо отправлено')
+    else:
+        print('Ошибка отправки1')
+
+
 # представление для вывода списка транзакций
 class TransactionAPIView(generics.ListCreateAPIView):
-    queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Transaction.objects.order_by(('', '-')[filter_order] + ('price', 'time_create')[filter_params])
+        queryset = Transaction.objects.filter(user=self.request.user.id)
+        return queryset.order_by(('', '-')[filter_order] + ('price', 'time_create')[filter_params])
 
 
 # представление для работы с категориями
@@ -51,6 +63,25 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 # представление для вывода списка транзакций
 class ProfileAPI(generics.ListAPIView):
-    queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
+
+    # получение профиля пользовате, расчет его транзакций и  отправка на почту отчета
+    def get_queryset(self):
+        queryset = Profile.objects.filter(user=self.request.user.id)
+
+        if not queryset:
+            Profile.objects.create(user=self.request.user.id, user_email="qqq@mail.ru", user_balance=0)
+            queryset = Profile.objects.filter(user=self.request.user.id)
+        else:
+            queryset_transaction = Transaction.objects.filter(user=self.request.user.id)
+            total_price = 0
+            for item in queryset_transaction:
+                total_price += item.price
+                for item in queryset:
+                    item.user_balance = total_price
+                    item.save()
+
+        send_mail(self.request.user.id)
+
+        return queryset

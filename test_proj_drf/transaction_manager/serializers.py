@@ -18,8 +18,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
     class Meta:
         model = Profile
         fields = ('__all__')

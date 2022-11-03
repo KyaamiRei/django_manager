@@ -13,6 +13,7 @@ urlpatterns = [
     # авторизация и регистрация c использованием токана
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path('rest-auth/', include('rest_framework.urls')),
     # страница с транзакциями
     path('transition/', TransactionAPIView.as_view(), name='transaction'),
     # страница профиля

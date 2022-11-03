@@ -10,9 +10,9 @@ router.register(r'category', CategoryViewSet)
 
 
 urlpatterns = [
-    # авторизация c использованием токана
-    path(r'^auth/', include('djoser.urls')),
-    path(r'^auth/', include('djoser.urls.authtoken')),
+    # авторизация и регистрация c использованием токана
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
     # страница с транзакциями
     path('transition/', TransactionAPIView.as_view(), name='transaction'),
     # страница профиля

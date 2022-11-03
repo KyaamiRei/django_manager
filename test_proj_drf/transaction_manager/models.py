@@ -14,10 +14,13 @@ class Profile(models.Model):
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, verbose_name="пользователь", on_delete=models.CASCADE)
-    price = models.FloatField(default=0, verbose_name="цена")
+    price = models.FloatField(blank=False, verbose_name="цена", )
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="дата создания")
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="категория")
     description = models.TextField(blank=True, verbose_name="описание")
+
+    class Meta:
+        ordering = ['-time_create']
 
     def __str__(self):
         return self.description
